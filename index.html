@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rajat & Puspa | Wedding Celebration</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Great+Vibes&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-deep: #1a0505;
+      --gold-primary: #d4af37;
+      --gold-gradient: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+      --glass-bg: rgba(255,255,255,0.05);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body { height: 100%; }
+
+    body {
+      background-color: var(--bg-deep);
+      background-image:
+        radial-gradient(circle at 50% 0%, #4a0e0e, transparent 60%),
+        linear-gradient(to bottom, #1a0505, #000);
+      font-family: 'Lato', sans-serif;
+      color: #fdf3e7;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      min-height: 100vh;
+    }
+
+    /* Floating Particles */
+    .particles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .particle {
+      position: absolute;
+      background: var(--gold-primary);
+      border-radius: 50%;
+      opacity: 0.28;
+      filter: blur(0.2px);
+      animation: floatUp linear infinite;
+      transform-origin: center;
+    }
+    @keyframes floatUp {
+      0% { transform: translateY(110vh) scale(0.2); opacity: 0; }
+      10% { opacity: 0.45; }
+      100% { transform: translateY(-20vh) scale(1); opacity: 0; }
+    }
+
+    header {
+      padding: 80px 20px 30px;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 2.6rem;
+      background: var(--gold-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+      opacity: 0;
+      animation: zoomIn 1.2s cubic-bezier(0.16,1,0.3,1) forwards;
+    }
+
+    .subtitle {
+      font-family: 'Great Vibes', cursive;
+      font-size: 1.6rem;
+      color: #e6c288;
+      opacity: 0;
+      animation: fadeUp 1s ease forwards 0.4s;
+    }
+
+    /* Vertical portrait video player (9:16) */
+    .video-container {
+      position: relative;
+      width: 92%;
+      max-width: 420px;            /* narrow, phone-friendly width */
+      margin: 36px auto;
+      padding: 8px;
+      background: var(--gold-gradient);
+      border-radius: 22px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6), 0 0 40px rgba(212,175,55,0.12);
+      opacity: 0;
+      transform: translateY(24px);
+      transition: all 0.7s ease;
+      z-index: 2;
+    }
+
+    .video-container.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .video-inner {
+      width: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #000;
+      aspect-ratio: 9/16;          /* force portrait orientation */
+      max-height: 88vh;            /* prevents overflow on small screens */
+      display: block;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;           /* fills the portrait frame, cropping if needed */
+      display: block;
+      transform: rotate(0deg);
+      background: #000;
+    }
+
+    /* Audio control */
+    .audio-control {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(212,175,55,0.45);
+      color: var(--gold-primary);
+      padding: 8px 18px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      transition: 0.22s ease;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      z-index: 3;
+    }
+    .audio-control:hover {
+      background: var(--gold-primary);
+      color: #000;
+    }
+
+    /* Invitation card */
+    .invite-card {
+      max-width: 640px;
+      margin: 64px auto;
+      padding: 44px 28px;
+      background: linear-gradient(160deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border: 1px solid rgba(212,175,55,0.14);
+      border-radius: 18px;
+      text-align: center;
+      position: relative;
+      opacity: 0;
+      transform: scale(0.98);
+      transition: all 0.7s ease;
+      z-index: 2;
+    }
+    .invite-card.visible { opacity: 1; transform: scale(1); }
+
+    .invite-text {
+      font-size: 1.05rem;
+      line-height: 1.9;
+      color: #dcd6cf;
+    }
+    .invite-text strong {
+      color: var(--gold-primary);
+      font-family: 'Cinzel', serif;
+      font-size: 1.25rem;
+    }
+
+    footer {
+      margin-top: 80px;
+      padding: 36px 12px;
+      font-size: 0.85rem;
+      opacity: 0.7;
+      text-align: center;
+      z-index: 2;
+      position: relative;
+    }
+
+    @keyframes zoomIn { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    @keyframes fadeUp { from { transform: translateY(14px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    /* Responsive tweaks */
+    @media (max-width: 420px) {
+      h1 { font-size: 2.2rem; }
+      .subtitle { font-size: 1.4rem; }
+      .video-container { max-width: 360px; border-radius: 18px; padding: 6px; }
+      .video-inner { border-radius: 12px; max-height: 82vh; }
+      .invite-card { margin: 48px 16px; padding: 36px 20px; }
+    }
+
+    @media (min-width: 900px) {
+      .video-container { max-width: 360px; } /* keep portrait narrow even on wide screens */
+    }
+  </style>
+</head>
+<body>
+
+  <div class="particles" id="particles"></div>
+
+  <header>
+    <h1>RAJAT & PUSPA</h1>
+    <p class="subtitle">Our Wedding Day • 05.03.2026</p>
+  </header>
+
+  <section class="video-container scroll-animate" aria-label="Wedding video">
+    <div class="video-inner">
+      <!--
+        Keep your portrait source here. If the source is landscape, it will be cropped to fit portrait.
+        If you prefer letterboxing (show full video with black bars), change object-fit: cover to object-fit: contain in the CSS.
+      -->
+      <video id="weddingVideo" autoplay muted loop playsinline poster="poster.jpg" aria-label="Wedding clip">
+        <source src="Video.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+
+      <button class="audio-control" id="audioBtn" aria-pressed="false" aria-label="Toggle audio">
+        <span id="audioLabel">🔇 Tap to Unmute</span>
+      </button>
+    </div>
+  </section>
+
+  <section class="invite-card scroll-animate" aria-label="Invitation">
+    <p class="invite-text"><br><br>
+<strong>Rajat & Pushpa</strong><br><br>
+      Two hearts. One destiny. ✨<br>
+
+With immense joy and heartfelt blessings, the families of Rajat and Puspa invite you to celebrate their sacred union on 5 March 2026.<br>
+
+Your presence will add warmth and happiness to our special day.<br><br>
+      
+      Join us for an evening of love, laughter, and happily ever after.<br>
+      Your presence is the only gift we seek.
+    </p>
+  </section>
+
+  <footer>
+    Made with ❤️ by the FAMILY
+  </footer>
+
+  <script>
+    // Intersection observer for reveal animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.scroll-animate').forEach(el => observer.observe(el));
+
+    // Audio toggle logic
+    const video = document.getElementById('weddingVideo');
+    const audioBtn = document.getElementById('audioBtn');
+    const audioLabel = document.getElementById('audioLabel');
+    let isMuted = true;
+
+    function updateAudioUI() {
+      audioBtn.setAttribute('aria-pressed', String(!isMuted));
+      audioLabel.textContent = isMuted ? '🔇 Tap to Unmute' : '🔊 Sound On';
+    }
+
+    function toggleAudio(e) {
+      e.stopPropagation();
+      isMuted = !isMuted;
+      video.muted = isMuted;
+      if (!isMuted) video.volume = 1.0;
+      updateAudioUI();
+    }
+
+    audioBtn.addEventListener('click', toggleAudio);
+    // allow tapping the video area to toggle audio as well
+    video.addEventListener('click', () => {
+      // Some browsers block autoplay with sound; keep initial state muted until user interacts.
+      toggleAudio(new Event('click'));
+    });
+
+    // Gold dust particle generator
+    const particlesContainer = document.getElementById('particles');
+    const particleCount = 40;
+    for (let i = 0; i < particleCount; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const size = Math.random() * 4 + 2; // 2px - 6px
+      p.style.width = `${size}px`;
+      p.style.height = `${size}px`;
+      p.style.left = `${Math.random() * 100}%`;
+      p.style.top = `${Math.random() * 100}%`;
+      p.style.opacity = (Math.random() * 0.35 + 0.15).toString();
+      p.style.animationDuration = `${Math.random() * 10 + 6}s`;
+      p.style.animationDelay = `${Math.random() * 6}s`;
+      p.style.transform = `translateY(${Math.random() * 40}px)`;
+      particlesContainer.appendChild(p);
+    }
+
+    // Ensure video is muted on load (some browsers require user gesture to unmute)
+    video.muted = true;
+    updateAudioUI();
+  </script>
+</body>
+</html>
