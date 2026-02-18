@@ -22,45 +22,60 @@ body {
   background-image:
     radial-gradient(circle at 50% 0%, #4a0e0e, transparent 70%),
     linear-gradient(to bottom, #1a0505, #000);
-  background-size: 100% 100%;
+  background-size: cover;
+  background-attachment: fixed; /* Keeps background still while scrolling */
   font-family: 'Lato', sans-serif;
   color: #fdf3e7;
   overflow-x: hidden;
-  position: relative;
   min-height: 100vh;
 }
 
-/* --- UPDATED FIREFLY CSS --- */
-.firefly {
+/* --- FIXED FIREFLY CONTAINER --- */
+/* This container sits ON TOP of the background color, but BEHIND the text */
+#firefly-container {
   position: fixed;
-  border-radius: 50%;
-  background-color: var(--gold-primary);
-  box-shadow: 0 0 10px rgba(212, 175, 55, 0.8); /* Stronger glow */
-  pointer-events: none;
-  z-index: -1; 
-  opacity: 0;
-  bottom: -10px; /* Start slightly below screen */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1; /* Layer 1: Above background */
+  pointer-events: none; /* Let clicks pass through */
+  overflow: hidden;
 }
 
-/* Keyframes for full screen travel */
+.firefly {
+  position: absolute; /* Changed from fixed to absolute within container */
+  border-radius: 50%;
+  background-color: var(--gold-primary);
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.8);
+  opacity: 0;
+  bottom: -10px;
+}
+
+/* Animation Keyframes */
 @keyframes floatUp {
   0% {
     transform: translateY(0) scale(0.5);
     opacity: 0;
   }
   10% {
-    opacity: 0.8;
+    opacity: 1; /* Fully visible quickly */
   }
   90% {
-    opacity: 0.6;
+    opacity: 0.5;
   }
   100% {
-    /* Move up by 110% of viewport height */
-    transform: translateY(-110vh) scale(1);
+    transform: translateY(-110vh) scale(1.2); /* Move all the way up */
     opacity: 0;
   }
 }
-/* ----------------------------- */
+
+/* --- CONTENT LAYERING --- */
+/* Everything readable must be z-index 2 or higher */
+header, .video-container, .invite-card, footer {
+  position: relative;
+  z-index: 5; 
+}
 
 /* Header */
 header {
@@ -84,7 +99,6 @@ h1 {
 
 /* Video */
 .video-container {
-  position: relative;
   width: 92%;
   max-width: 420px;
   margin: 36px auto;
@@ -92,7 +106,6 @@ h1 {
   background: var(--gold-gradient);
   border-radius: 22px;
   box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-  z-index: 10;
 }
 
 .video-inner {
@@ -120,6 +133,7 @@ video {
   transform: translateX(-50%);
   display: flex;
   gap: 14px;
+  z-index: 20; /* Ensure buttons are clickable */
 }
 
 .control-btn {
@@ -148,8 +162,6 @@ video {
   border-radius: 18px;
   text-align: center;
   backdrop-filter: blur(5px);
-  z-index: 10;
-  position: relative;
 }
 
 .invite-text {
@@ -175,6 +187,8 @@ footer {
 </head>
 
 <body>
+
+<div id="firefly-container"></div>
 
 <header>
   <h1>RAJAT & PUSPA</h1>
@@ -218,8 +232,10 @@ const fullscreenBtn = document.getElementById('fullscreenBtn');
 
 let isMuted = true;
 
+// Attempt Autoplay
 video.muted = true;
-video.play().catch(() => {
+video.play().catch(error => {
+  console.log("Autoplay prevented:", error);
   playPauseBtn.textContent = "▶";
 });
 
@@ -251,40 +267,41 @@ function toggleFullscreen() {
 }
 fullscreenBtn.addEventListener('click', toggleFullscreen);
 
-/* --- UPDATED DYNAMIC BACKGROUND MOTION --- */
+/* --- ✅ FIXED: DYNAMIC BACKGROUND MOTION --- */
 function createFireflies() {
-  const container = document.body;
-  const fireflyCount = 80; // Increased from 30 to 80
+  // Target the specific container, NOT the body
+  const container = document.getElementById('firefly-container');
+  const fireflyCount = 80; 
 
   for (let i = 0; i < fireflyCount; i++) {
     const firefly = document.createElement('div');
     firefly.classList.add('firefly');
     
-    // Random Positioning (Horizontal 0-100vw)
+    // Position 0-100% of the container width
     const x = Math.random() * 100;
     
-    // Speed: Between 4s (fast) and 9s (medium)
+    // Random Animation Duration (4s to 9s)
     const duration = Math.random() * 5 + 4;
     
-    // Delay: Random start time so they don't all go at once
-    const delay = Math.random() * 10; 
+    // Random Delay (0s to 5s)
+    const delay = Math.random() * 5; 
     
-    // Size: Varied sizes for depth
-    const size = Math.random() * 5 + 2; 
+    // Random Size (2px to 5px)
+    const size = Math.random() * 4 + 2; 
 
-    firefly.style.left = `${x}vw`;
-    firefly.style.width = `${size}px`;
-    firefly.style.height = `${size}px`;
+    firefly.style.left = x + '%'; // Use % for better responsive behavior
+    firefly.style.width = size + 'px';
+    firefly.style.height = size + 'px';
     
-    // Apply animation
+    // Set Animation
     firefly.style.animation = `floatUp ${duration}s linear infinite`;
-    firefly.style.animationDelay = `-${delay}s`; // Negative delay makes them appear immediately
+    firefly.style.animationDelay = `-${delay}s`;
 
     container.appendChild(firefly);
   }
 }
 
-// Start animation
+// Run immediately
 createFireflies();
 </script>
 
