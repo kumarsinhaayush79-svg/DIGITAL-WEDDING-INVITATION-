@@ -14,10 +14,11 @@
       --gold-primary: #d4af37;
       --gold-gradient: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
       --glass-bg: rgba(255,255,255,0.05);
+      --control-bg: rgba(0,0,0,0.55);
+      --control-hover: rgba(212,175,55,0.95);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     html, body { height: 100%; }
 
     body {
@@ -34,12 +35,7 @@
     }
 
     /* Floating Particles */
-    .particles {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 0;
-    }
+    .particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
     .particle {
       position: absolute;
       background: var(--gold-primary);
@@ -55,13 +51,7 @@
       100% { transform: translateY(-20vh) scale(1); opacity: 0; }
     }
 
-    header {
-      padding: 80px 20px 30px;
-      text-align: center;
-      position: relative;
-      z-index: 2;
-    }
-
+    header { padding: 80px 20px 30px; text-align: center; position: relative; z-index: 2; }
     h1 {
       font-family: 'Cinzel', serif;
       font-size: 2.6rem;
@@ -72,7 +62,6 @@
       opacity: 0;
       animation: zoomIn 1.2s cubic-bezier(0.16,1,0.3,1) forwards;
     }
-
     .subtitle {
       font-family: 'Great Vibes', cursive;
       font-size: 1.6rem;
@@ -123,31 +112,47 @@
       background: #000;
     }
 
-    /* Audio control */
-    .audio-control {
+    /* Controls wrapper (audio, play/pause, fullscreen) */
+    .controls {
       position: absolute;
-      bottom: 12px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(0,0,0,0.55);
-      backdrop-filter: blur(6px);
-      border: 1px solid rgba(212,175,55,0.45);
+      bottom: 12px;
+      display: flex;
+      gap: 10px;
+      z-index: 4;
+      align-items: center;
+      pointer-events: auto;
+    }
+
+    .control-btn {
+      background: var(--control-bg);
       color: var(--gold-primary);
-      padding: 8px 18px;
+      border: 1px solid rgba(212,175,55,0.45);
+      padding: 8px 14px;
       border-radius: 999px;
       cursor: pointer;
       font-size: 0.85rem;
       text-transform: uppercase;
-      letter-spacing: 0.8px;
-      transition: 0.22s ease;
-      display: flex;
-      gap: 10px;
+      letter-spacing: 0.6px;
+      display: inline-flex;
+      gap: 8px;
       align-items: center;
-      z-index: 3;
+      transition: 0.18s ease;
     }
-    .audio-control:hover {
-      background: var(--gold-primary);
+    .control-btn:hover, .control-btn:focus {
+      background: var(--control-hover);
       color: #000;
+      outline: none;
+    }
+
+    .icon-btn {
+      padding: 8px;
+      width: 44px;
+      height: 44px;
+      justify-content: center;
+      border-radius: 12px;
+      font-size: 1.05rem;
     }
 
     /* Invitation card */
@@ -198,10 +203,25 @@
       .video-container { max-width: 360px; border-radius: 18px; padding: 6px; }
       .video-inner { border-radius: 12px; max-height: 82vh; }
       .invite-card { margin: 48px 16px; padding: 36px 20px; }
+      .control-btn { padding: 8px 10px; font-size: 0.78rem; }
+      .icon-btn { width: 40px; height: 40px; }
     }
 
     @media (min-width: 900px) {
       .video-container { max-width: 360px; } /* keep portrait narrow even on wide screens */
+    }
+
+    /* Small helper for screen-reader-only text (visually hidden) */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+      border: 0;
     }
   </style>
 </head>
@@ -215,31 +235,32 @@
   </header>
 
   <section class="video-container scroll-animate" aria-label="Wedding video">
-    <div class="video-inner">
-      <!--
-        Keep your portrait source here. If the source is landscape, it will be cropped to fit portrait.
-        If you prefer letterboxing (show full video with black bars), change object-fit: cover to object-fit: contain in the CSS.
-      -->
+    <div class="video-inner" id="videoInner">
       <video id="weddingVideo" autoplay muted loop playsinline poster="poster.jpg" aria-label="Wedding clip">
         <source src="Video.mp4" type="video/mp4">
         Your browser does not support the video tag.
       </video>
 
-      <button class="audio-control" id="audioBtn" aria-pressed="false" aria-label="Toggle audio">
-        <span id="audioLabel">🔇 Tap to Unmute</span>
-      </button>
+      <!-- Controls: Play/Pause, Audio, Fullscreen -->
+      <div class="controls" role="group" aria-label="Video controls">
+        <button class="control-btn icon-btn" id="playPauseBtn" aria-pressed="false" aria-label="Play video">▶</button>
+
+        <button class="control-btn" id="audioBtn" aria-pressed="false" aria-label="Toggle audio">
+          <span id="audioLabel">🔇</span>
+          <span class="sr-only" id="audioText">Tap to unmute</span>
+        </button>
+
+        <button class="control-btn icon-btn" id="fsBtn" aria-pressed="false" aria-label="Enter fullscreen">⤢</button>
+      </div>
     </div>
   </section>
 
   <section class="invite-card scroll-animate" aria-label="Invitation">
     <p class="invite-text"><br><br>
-<strong>Rajat & Pushpa</strong><br><br>
+      <strong>Rajat & Pushpa</strong><br><br>
       Two hearts. One destiny. ✨<br>
-
-With immense joy and heartfelt blessings, the families of Rajat and Puspa invite you to celebrate their sacred union on 5 March 2026.<br>
-
-Your presence will add warmth and happiness to our special day.<br><br>
-      
+      With immense joy and heartfelt blessings, the families of Rajat and Puspa invite you to celebrate their sacred union on 5 March 2026.<br>
+      Your presence will add warmth and happiness to our special day.<br><br>
       Join us for an evening of love, laughter, and happily ever after.<br>
       Your presence is the only gift we seek.
     </p>
@@ -256,33 +277,156 @@ Your presence will add warmth and happiness to our special day.<br><br>
         if (entry.isIntersecting) entry.target.classList.add('visible');
       });
     }, { threshold: 0.12 });
-
     document.querySelectorAll('.scroll-animate').forEach(el => observer.observe(el));
 
-    // Audio toggle logic
+    // Elements
     const video = document.getElementById('weddingVideo');
+    const playPauseBtn = document.getElementById('playPauseBtn');
     const audioBtn = document.getElementById('audioBtn');
     const audioLabel = document.getElementById('audioLabel');
-    let isMuted = true;
+    const audioText = document.getElementById('audioText');
+    const fsBtn = document.getElementById('fsBtn');
+    const videoInner = document.getElementById('videoInner');
 
+    // Initial states
+    let isMuted = true;
+    let isPlaying = true; // autoplay is requested; browsers may keep it muted and playing
+    let isFullscreen = false;
+
+    // Ensure video starts muted (autoplay policy)
+    video.muted = true;
+    video.playsInline = true;
+
+    // UI update helpers
     function updateAudioUI() {
       audioBtn.setAttribute('aria-pressed', String(!isMuted));
-      audioLabel.textContent = isMuted ? '🔇 Tap to Unmute' : '🔊 Sound On';
+      audioLabel.textContent = isMuted ? '🔇' : '🔊';
+      audioText.textContent = isMuted ? 'Tap to unmute' : 'Sound on';
     }
 
+    function updatePlayUI() {
+      playPauseBtn.setAttribute('aria-pressed', String(isPlaying));
+      playPauseBtn.textContent = isPlaying ? '⏸' : '▶';
+      playPauseBtn.setAttribute('aria-label', isPlaying ? 'Pause video' : 'Play video');
+    }
+
+    function updateFsUI() {
+      fsBtn.setAttribute('aria-pressed', String(isFullscreen));
+      fsBtn.textContent = isFullscreen ? '⤡' : '⤢';
+      fsBtn.setAttribute('aria-label', isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen');
+    }
+
+    // Play / Pause toggle
+    async function togglePlayPause(e) {
+      if (e) e.stopPropagation();
+      try {
+        if (video.paused) {
+          const playPromise = video.play();
+          if (playPromise !== undefined) {
+            await playPromise.catch(() => {
+              // If autoplay/play fails, keep muted and try again on user gesture
+              video.muted = true;
+              isMuted = true;
+              updateAudioUI();
+            });
+          }
+          isPlaying = true;
+        } else {
+          video.pause();
+          isPlaying = false;
+        }
+      } catch (err) {
+        // ignore
+      }
+      updatePlayUI();
+    }
+
+    // Audio toggle
     function toggleAudio(e) {
-      e.stopPropagation();
+      if (e) e.stopPropagation();
       isMuted = !isMuted;
       video.muted = isMuted;
       if (!isMuted) video.volume = 1.0;
       updateAudioUI();
     }
 
+    // Fullscreen toggle
+    async function toggleFullscreen(e) {
+      if (e) e.stopPropagation();
+      const el = videoInner;
+      try {
+        if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+          if (el.requestFullscreen) {
+            await el.requestFullscreen();
+          } else if (el.webkitRequestFullscreen) {
+            el.webkitRequestFullscreen();
+          } else if (el.msRequestFullscreen) {
+            el.msRequestFullscreen();
+          }
+          isFullscreen = true;
+        } else {
+          if (document.exitFullscreen) {
+            await document.exitFullscreen();
+          } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+          } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+          }
+          isFullscreen = false;
+        }
+      } catch (err) {
+        // fallback: try video element fullscreen
+        try {
+          if (!document.fullscreenElement && video.requestFullscreen) {
+            await video.requestFullscreen();
+            isFullscreen = true;
+          }
+        } catch (err2) {
+          isFullscreen = false;
+        }
+      }
+      updateFsUI();
+    }
+
+    // Sync UI with native events
+    video.addEventListener('play', () => { isPlaying = true; updatePlayUI(); });
+    video.addEventListener('pause', () => { isPlaying = false; updatePlayUI(); });
+    video.addEventListener('volumechange', () => {
+      isMuted = video.muted;
+      updateAudioUI();
+    });
+
+    document.addEventListener('fullscreenchange', () => {
+      isFullscreen = !!document.fullscreenElement;
+      updateFsUI();
+    });
+    document.addEventListener('webkitfullscreenchange', () => {
+      isFullscreen = !!document.webkitFullscreenElement;
+      updateFsUI();
+    });
+
+    // Click handlers
+    playPauseBtn.addEventListener('click', togglePlayPause);
     audioBtn.addEventListener('click', toggleAudio);
-    // allow tapping the video area to toggle audio as well
-    video.addEventListener('click', () => {
-      // Some browsers block autoplay with sound; keep initial state muted until user interacts.
-      toggleAudio(new Event('click'));
+    fsBtn.addEventListener('click', toggleFullscreen);
+
+    // Tapping the video toggles play/pause
+    video.addEventListener('click', () => togglePlayPause());
+
+    // Keyboard accessibility
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && document.activeElement === playPauseBtn) {
+        e.preventDefault();
+        togglePlayPause();
+      }
+      if ((e.key === 'f' || e.key === 'F') && document.activeElement === fsBtn) {
+        e.preventDefault();
+        toggleFullscreen();
+      }
+      if ((e.key === 'm' || e.key === 'M') && document.activeElement === audioBtn) {
+        e.preventDefault();
+        toggleAudio();
+      }
     });
 
     // Gold dust particle generator
@@ -303,9 +447,18 @@ Your presence will add warmth and happiness to our special day.<br><br>
       particlesContainer.appendChild(p);
     }
 
-    // Ensure video is muted on load (some browsers require user gesture to unmute)
-    video.muted = true;
+    // Initialize UI
     updateAudioUI();
+    updatePlayUI();
+    updateFsUI();
+
+    // Reflect autoplay state
+    if (!video.paused) {
+      isPlaying = true;
+    } else {
+      isPlaying = false;
+    }
+    updatePlayUI();
   </script>
 </body>
 </html>
